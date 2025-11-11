@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Instagram Reel Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: white;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            color: white;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            transform: scale(1);
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            transition: all 0.2s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+        
+        .quote-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quote-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .quote-card.selected {
+            border-color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.2);
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #0ea5e9 0%, #3b82f6 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-8 text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            AI Reel Generator
+        </h1>
+        <p class="text-xl text-white/70 max-w-2xl mx-auto">
+            Create stunning Instagram reels with AI-powered quotes. Generate up to 50 reels with beautiful animations and modern design.
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Configuration Panel -->
+            <div class="lg:col-span-1">
+                <div class="glass rounded-2xl p-6 shadow-xl sticky top-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <h2 class="text-2xl font-semibold">Configuration</h2>
+                    </div>
+
+                    <!-- Quote Type Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-white/80 mb-3">Quote Type</label>
+                        <div class="grid grid-cols-2 gap-3" id="quoteTypes">
+                            <!-- Quote types will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Number of Reels -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-white/80 mb-3">Number of Reels (1-50)</label>
+                        <input type="number" min="1" max="50" value="5" id="reelCount" class="input-field w-full">
+                    </div>
+
+                    <!-- Duration -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-white/80 mb-3">Duration (seconds)</label>
+                        <input type="number" min="5" max="30" value="10" id="duration" class="input-field w-full">
+                    </div>
+
+                    <!-- Font Size -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-white/80 mb-3">Font Size</label>
+                        <input type="range" min="24" max="72" value="48" id="fontSize" class="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer">
+                        <div class="text-center text-sm text-white/60 mt-2" id="fontSizeDisplay">48px</div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button id="generateBtn" class="btn-primary w-full flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Generate Reels
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview and Results -->
+            <div class="lg:col-span-2">
+                <!-- Progress Bar -->
+                <div id="progressContainer" class="glass rounded-2xl p-6 shadow-xl mb-6 hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-white/80">Generating Reels</span>
+                        <span class="text-sm font-medium text-blue-400" id="progressText">0%</span>
+                    </div>
+                    <div class="progress-bar h-3">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Generated Reels -->
+                <div class="glass rounded-2xl p-6 shadow-xl">
+                    <div class="flex items-center gap-3 mb-6">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        <h2 class="text-2xl font-semibold">Generated Reels</h2>
+                    </div>
+
+                    <div id="reelsContainer" class="text-center py-12">
+                        <svg class="w-16 h-16 text-white/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                        </svg>
+                        <p class="text-white/60 text-lg">Configure your settings and click "Generate Reels" to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Quote data
+        const quotes = {
+            famous: [
+                "The only way to do great work is to love what you do. - Steve Jobs",
+                "Life is what happens when you're busy making other plans. - John Lennon",
+                "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+                "Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill",
+                "The best way to predict the future is to create it. - Peter Drucker"
+            ],
+            attitude: [
+                "I don't care what you think about me. I don't think about you at all. - Coco Chanel",
+                "I am not what happened to me, I am what I choose to become. - Carl Jung",
+                "The only person you should try to be better than is the person you were yesterday. - Unknown",
+                "I am enough. I have enough. I do enough. - Unknown",
+                "My attitude is based on how you treat me. - Unknown"
+            ],
+            life: [
+                "Life is not about waiting for the storm to pass but learning to dance in the rain. - Vivian Greene",
+                "The purpose of our lives is to be happy. - Dalai Lama",
+                "Life is really simple, but we insist on making it complicated. - Confucius",
+                "In the end, it's not the years in your life that count. It's the life in your years. - Abraham Lincoln",
+                "Life is either a daring adventure or nothing at all. - Helen Keller"
+            ],
+            stoicism: [
+                "The happiness of your life depends upon the quality of your thoughts. - Marcus Aurelius",
+                "Waste no more time arguing about what a good man should be. Be one. - Marcus Aurelius",
+                "It's not what happens to you, but how you react to it that matters. - Epictetus",
+                "The best revenge is not to be like your enemy. - Marcus Aurelius",
+                "Choose not to be harmed — and you won't feel harmed. Don't feel harmed — and you haven't been. - Marcus Aurelius"
+            ],
+            motivation: [
+                "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+                "The only limit to our realization of tomorrow will be our doubts of today. - Franklin D. Roosevelt",
+                "What you get by achieving your goals is not as important as what you become by achieving your goals. - Zig Ziglar",
+                "The way to get started is to quit talking and begin doing. - Walt Disney",
+                "It does not matter how slowly you go as long as you do not stop. - Confucius"
+            ],
+            wisdom: [
+                "The only true wisdom is in knowing you know nothing. - Socrates",
+                "Knowledge speaks, but wisdom listens. - Jimi Hendrix",
+                "Wisdom comes from experience, and experience comes from mistakes. - Unknown",
+                "The fool doth think he is wise, but the wise man knows himself to be a fool. - William Shakespeare",
+                "Wisdom is not a product of schooling but of the lifelong attempt to acquire it. - Albert Einstein"
+            ]
+        };
+
+        const quoteTypes = [
+            { id: 'famous', label: 'Famous', icon: '💬', color: 'from-blue-500 to-purple-600' },
+            { id: 'attitude', label: 'Attitude', icon: '❤️', color: 'from-red-500 to-pink-600' },
+            { id: 'life', label: 'Life', icon: '☀️', color: 'from-yellow-500 to-orange-600' },
+            { id: 'stoicism', label: 'Stoicism', icon: '🧠', color: 'from-gray-500 to-slate-600' },
+            { id: 'motivation', label: 'Motivation', icon: '⚡', color: 'from-green-500 to-emerald-600' },
+            { id: 'wisdom', label: 'Wisdom', icon: '✨', color: 'from-indigo-500 to-blue-600' }
+        ];
+
+        let selectedType = 'famous';
+        let isGenerating = false;
+
+        // Initialize the app
+        function init() {
+            renderQuoteTypes();
+            setupEventListeners();
+        }
+
+        // Render quote type buttons
+        function renderQuoteTypes() {
+            const container = document.getElementById('quoteTypes');
+            container.innerHTML = quoteTypes.map(type => `
+                <button 
+                    class="p-4 rounded-xl border-2 transition-all duration-200 ${selectedType === type.id ? 'border-blue-500 bg-gradient-to-r ' + type.color : 'border-white/20 bg-white/5 hover:bg-white/10'}"
+                    onclick="selectQuoteType('${type.id}')"
+                >
+                    <div class="text-2xl mb-2">${type.icon}</div>
+                    <span class="text-sm font-medium">${type.label}</span>
+                </button>
+            `).join('');
+        }
+
+        // Select quote type
+        function selectQuoteType(type) {
+            selectedType = type;
+            renderQuoteTypes();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Font size slider
+            const fontSizeSlider = document.getElementById('fontSize');
+            const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+            
+            fontSizeSlider.addEventListener('input', (e) => {
+                fontSizeDisplay.textContent = e.target.value + 'px';
+            });
+
+            // Generate button
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.addEventListener('click', generateReels);
+        }
+
+        // Generate reels
+        async function generateReels() {
+            if (isGenerating) return;
+
+            const count = parseInt(document.getElementById('reelCount').value) || 5;
+            const duration = parseInt(document.getElementById('duration').value) || 10;
+            const fontSize = parseInt(document.getElementById('fontSize').value) || 48;
+
+            isGenerating = true;
+            updateGenerateButton(true);
+            showProgress();
+
+            const reels = [];
+            const typeQuotes = quotes[selectedType] || quotes.famous;
+
+            for (let i = 0; i < count; i++) {
+                const quote = typeQuotes[i % typeQuotes.length];
+                const reelUrl = await generateSingleReel(quote, duration, fontSize);
+                reels.push(reelUrl);
+                
+                // Update progress
+                const progress = ((i + 1) / count) * 100;
+                updateProgress(progress);
+                
+                // Small delay
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            displayReels(reels);
+            hideProgress();
+            updateGenerateButton(false);
+            isGenerating = false;
+        }
+
+        // Generate single reel
+        async function generateSingleReel(quote, duration, fontSize) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = 1080;
+            canvas.height = 1920;
+
+            // Set up recording
+            const stream = canvas.captureStream(30);
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9'
+            });
+
+            const chunks = [];
+            
+            return new Promise((resolve) => {
+                mediaRecorder.ondataavailable = (event) => {
+                    chunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    resolve(url);
+                };
+
+                mediaRecorder.start();
+
+                // Animate the quote
+                let startTime = Date.now();
+                const animate = () => {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // Clear canvas
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Calculate fade-in effect
+                    const fadeInDuration = 1.5;
+                    const opacity = elapsed < fadeInDuration ? elapsed / fadeInDuration : 1;
+
+                    // Draw text
+                    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                    ctx.font = `${fontSize}px Poppins`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+
+                    // Split quote into lines
+                    const words = quote.split(' ');
+                    const lines = [];
+                    let currentLine = '';
+
+                    for (const word of words) {
+                        const testLine = currentLine ? `${currentLine} ${word}` : word;
+                        const metrics = ctx.measureText(testLine);
+                        
+                        if (metrics.width > canvas.width * 0.8) {
+                            lines.push(currentLine);
+                            currentLine = word;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    if (currentLine) {
+                        lines.push(currentLine);
+                    }
+
+                    // Draw text lines
+                    const lineHeight = fontSize * 1.5;
+                    const totalHeight = lines.length * lineHeight;
+                    const startY = (canvas.height - totalHeight) / 2;
+
+                    lines.forEach((line, index) => {
+                        const y = startY + index * lineHeight;
+                        ctx.fillText(line, canvas.width / 2, y);
+                    });
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        mediaRecorder.stop();
+                    }
+                };
+
+                animate();
+            });
+        }
+
+        // Update generate button
+        function updateGenerateButton(generating) {
+            const btn = document.getElementById('generateBtn');
+            if (generating) {
+                btn.innerHTML = `
+                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Generating...
+                `;
+                btn.disabled = true;
+            } else {
+                btn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Generate Reels
+                `;
+                btn.disabled = false;
+            }
+        }
+
+        // Show progress
+        function showProgress() {
+            document.getElementById('progressContainer').classList.remove('hidden');
+        }
+
+        // Hide progress
+        function hideProgress() {
+            document.getElementById('progressContainer').classList.add('hidden');
+        }
+
+        // Update progress
+        function updateProgress(progress) {
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '%';
+        }
+
+        // Display generated reels
+        function displayReels(reels) {
+            const container = document.getElementById('reelsContainer');
+            
+            if (reels.length === 0) {
+                container.innerHTML = `
+                    <svg class="w-16 h-16 text-white/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                    </svg>
+                    <p class="text-white/60 text-lg">No reels generated</p>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${reels.map((reel, index) => `
+                        <div class="relative group fade-in" style="animation-delay: ${index * 0.1}s">
+                            <video src="${reel}" class="w-full rounded-xl shadow-lg" controls loop></video>
+                            <button 
+                                class="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                onclick="downloadReel('${reel}', ${index + 1})"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Download reel
+        function downloadReel(url, index) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `reel-${index}.webm`;
+            link.click();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html> 
